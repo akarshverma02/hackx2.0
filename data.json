@@ -1,0 +1,5 @@
+{
+    "code1": "def add_numbers(a, b):\n  return a + b",
+    "code2": "def sub_numbers(a, b):\n  return a - b",
+    "code3": "i = 0\nwhile (i<10):\n\tprint(i)\n\ti+=1\n"
+}
