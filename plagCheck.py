@@ -9,12 +9,10 @@ from sentence_transformers import SentenceTransformer, util
 
 """normalize"""
 def normalize(code):
-    # Remove comments
     code = re.sub(r'#.*', '', code)
     code = re.sub(r'""".*?"""', '', code, flags=re.DOTALL)
     code = re.sub(r"'''.*?'''", '', code, flags=re.DOTALL)
     
-    # Remove spaces and tabs
     code = re.sub(r'\s+', '', code)
     
     return code
@@ -68,23 +66,19 @@ def variable_comp(code1,code2):
 
 """checking for struct change"""
 def structure(code1, code2):
-    # Parse the code into ASTs
+
     tree1 = ast.parse(code1)
     tree2 = ast.parse(code2)
 
-    # Convert the ASTs to strings
     str1 = ast.unparse(tree1)
     str2 = ast.unparse(tree2)
 
-    # Normalize the strings by removing whitespace and comments
     str1 = ''.join(str1.split())
     str2 = ''.join(str2.split())
 
-    # Compare the normalized strings using difflib
     sm = difflib.SequenceMatcher(None, str1, str2)
     ratio = sm.ratio()
 
-    # If the ratio is close to 1, the code logic is likely similar
     return ratio
 
 """checking for obfuscated"""
@@ -93,36 +87,33 @@ def tokenize_code(code):
     return tokens
 
 def obfuscated(original_code, submitted_code):
-    # Tokenize the code by splitting on whitespace and special characters
+
     original_tokens = tokenize_code(original_code)
     submitted_tokens = tokenize_code(submitted_code)
-    
-    # Compare the tokenized code
+
     similarity = difflib.SequenceMatcher(None, original_tokens, submitted_tokens).ratio()
     
-    # Define a threshold for similarity
-    threshold = 0.5  # Adjust this threshold based on your requirements
+    threshold = 0.5
     
-    #print(similarity)
     return similarity < threshold
 
 # """checking for Semantic Similarity:"""
-# # Load pre-trained BERT model and tokenizer
+#
 # tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 # model = BertModel.from_pretrained('bert-base-uncased')
 
 # def encode_code(code_snippet):
-#     # Tokenize and encode the code snippet
+#     
 #     inputs = tokenizer(code_snippet, return_tensors='pt', truncation=True, padding=True)
 #     outputs = model(**inputs)
-#     # Get the embeddings for the [CLS] token
+#     
 #     cls_embeddings = outputs.last_hidden_state[:, 0, :].detach().numpy()
 #     return cls_embeddings
 
 # def cosine_similarity(code1, code2):
 #     vec1 = encode_code(code1)
 #     vec2 = encode_code(code2)
-#     # Compute cosine similarity between two vectors
+#     
 #     dot_product = np.dot(vec1, vec2.T)
 #     norm_vec1 = np.linalg.norm(vec1)
 #     norm_vec2 = np.linalg.norm(vec2)
